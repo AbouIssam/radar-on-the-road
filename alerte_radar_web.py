@@ -6,6 +6,7 @@ from shapely.geometry import LineString, Point
 from geopy.distance import geodesic
 import folium
 import streamlit.components.v1 as components
+import numpy as np
 
 def adresse_to_coordonnees(adresse):
     geolocator = Nominatim(user_agent="MonApplicationGeo")
@@ -45,7 +46,10 @@ def create_map(trajet, radars):
     folium.Marker([start[1], start[0]], tooltip="Départ").add_to(m)
     folium.Marker([end[1], end[0]], tooltip="Arrivée").add_to(m)
     for radar in radars:
-        folium.Marker((radar[0], radar[1]), tooltip=f"VMA={int(radar[2])}km/h, Type={radar[3]}").add_to(m)
+        if np.isnan(radar[2]):
+            folium.Marker((radar[0],radar[1]),tooltip=f"Type de radar={radar[3]}").add_to(m)
+        else:
+            folium.Marker((radar[0],radar[1]),tooltip= f"VMA={int(radar[2])}km/h,Type de radar={radar[3]}").add_to(m)
     return m
 
 st.title("🗺️ Détection de radars sur un trajet")
